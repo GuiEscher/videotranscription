@@ -11,7 +11,7 @@ export const Banner = () => {
   const [text, setText] = useState("");
   const [delta, setDelta] = useState(300 - Math.random() * 100);
   const [index, setIndex] = useState(1);
-  const toRotate = ["Web Developer", "Web Designer", "UI/UX Designer"];
+  const toRotate = ["Choose your video", "mp3 and mp4 videos"];
   const period = 2000;
 
   useEffect(() => {
@@ -63,13 +63,13 @@ export const Banner = () => {
                     isVisible ? "animate__animated animate__fadeIn" : ""
                   }
                 >
-                  <span className="tagline">Welcome to my Portfolio</span>
+                  <span className="tagline">Welcome to video transcriptor</span>
                   <h1>
-                    {`Hi! I'm Guilherme`}{" "}
+                    {`Hi! Welcome to video transcriptor`}{" "}
                     <span
                       className="txt-rotate"
                       dataPeriod="1000"
-                      data-rotate='[ "Web Developer", "Web Designer", "UI/UX Designer" ]'
+                      data-rotate='[ "mp3 videos", "mp4 videos", ]'
                     >
                       <span className="wrap">{text}</span>
                     </span>
@@ -84,7 +84,7 @@ export const Banner = () => {
                   {/* Atualize o botão para usar o componente Link do react-router-dom */}
                   <Link to="/auth">
                     <button>
-                      Let’s Connect <ArrowRightCircle size={25} />
+                      Let’s transcript <ArrowRightCircle size={25} />
                     </button>
                   </Link>
                 </div>

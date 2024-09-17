@@ -344,3 +344,101 @@ nav.navbar .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
 .auth-container button:hover {
   background-color: #0056b3;
 }
+/* Estilos da página principal */
+.container-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #121212;
+  color: #ffffff;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.config-button {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.config-button:hover {
+  background-color: #444;
+}
+
+/* Estilos para a área de upload */
+.upload-container {
+  border: 2px dashed #aaa;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: center;
+  transition: border-color 0.3s ease;
+  background-color: #1e1e1e;
+}
+
+.upload-container:hover {
+  border-color: #fff;
+}
+
+.upload-input {
+  display: none;
+}
+
+.upload-container.dragging {
+  border-color: #00ff00;
+}
+
+.transcription-result {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #2b2b2b;
+  border-radius: 5px;
+}
+
+/* Modal de Configurações */
+.modal {
+  background-color: #333;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+}
+
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+/* Botão no Modal */
+.modal button {
+  background-color: #444;
+  color: #fff;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.modal button:hover {
+  background-color: #555;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container-main {
+    padding: 20px;
+  }
+
+  .upload-container {
+    padding: 20px;
+  }
+}

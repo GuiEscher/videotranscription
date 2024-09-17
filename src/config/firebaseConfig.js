@@ -1,30 +1,28 @@
-// src/firebaseConfig.js
 import { initializeApp } from "firebase/app";
 import { getAuth, setPersistence, browserSessionPersistence } from "firebase/auth";
 
-// Your web app's Firebase configuration
+// Configuração do Firebase a partir das variáveis de ambiente
 const firebaseConfig = {
-  apiKey: "AIzaSyAoBtfdXb_o0OsogfZqS3q5gin__-jooPo",
-  authDomain: "videotranscription-e2f65.firebaseapp.com",
-  projectId: "videotranscription-e2f65",
-  storageBucket: "videotranscription-e2f65.appspot.com",
-  messagingSenderId: "364100836668",
-  appId: "1:364100836668:web:6bfce56b97a4885f3fd239",
-  measurementId: "G-DRWT90LETD"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID // Verifique se está incluído
 };
 
-// Initialize Firebase
+// Inicialize o Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 // Configurar persistência para a sessão atual
 setPersistence(auth, browserSessionPersistence)
   .then(() => {
-    // O Firebase agora manterá a sessão de autenticação durante a sessão do navegador
+    console.log("Persistência de sessão configurada com sucesso");
   })
   .catch((error) => {
-    // Tratar erros de configuração de persistência
-    console.error(error);
+    console.error("Erro ao configurar persistência de sessão:", error);
   });
 
 export { auth };

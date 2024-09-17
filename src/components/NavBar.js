@@ -50,13 +50,13 @@ export const NavBar = () => {
               Home
             </Nav.Link>
             <Nav.Link
-              href="#skills"
+              href="#transcription"
               className={
                 activeLink === "skills" ? "active navbar-link" : "navbar-link"
               }
-              onClick={() => onUpdateActiveLink("skills")}
+              onClick={() => onUpdateActiveLink("transcription")}
             >
-              Skills
+              Transcription
             </Nav.Link>
             <Nav.Link
               href="#projects"
@@ -67,7 +67,7 @@ export const NavBar = () => {
               }
               onClick={() => onUpdateActiveLink("projects")}
             >
-              Projects
+              About
             </Nav.Link>
           </Nav>
           <span className="navbar-text">
@@ -85,7 +85,7 @@ export const NavBar = () => {
             {/* Atualize o botão para usar o componente Link do react-router-dom */}
             <Link to="/auth">
               <button className="vvd">
-                <span>Let’s Connect</span>
+                <span>Let’s transcript</span>
               </button>
             </Link>
           </span>

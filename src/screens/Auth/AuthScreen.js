@@ -1,17 +1,29 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import axios from 'axios'; 
 import { auth } from '../../config/firebaseConfig'; 
 import '../../App.css'; 
-import { useNavigate } from 'react-router-dom';  // Importar useNavigate
+import { useNavigate, navigation } from 'react-router-dom';  // Importar useNavigate
 
 const AuthScreen = () => {
+
+  useEffect(() => {
+    // se o usuário nao estiver logado, currentUser = null
+    console.log("Usuário atual: " + JSON.stringify(currentUser));
+    if(currentUser){
+      navigate('/main');
+    }
+  }, []);
+
+  const currentUser = auth.currentUser;
   const [isRegistering, setIsRegistering] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nome, setNome] = useState('');
 
   const navigate = useNavigate();  // Usar useNavigate
+
+
 
   const googleProvider = new GoogleAuthProvider();
 
