@@ -80,7 +80,7 @@ async function processTranscription(filePath, transcriptionId) {
 
     // Atualiza o banco de dados com o texto da transcrição e o status
     await pool.query(
-      "UPDATE transcriptions SET transcription_id = $1, status = 'done' WHERE transcription_id = $2",
+      "UPDATE transcriptions SET transcription_text = $1, status = 'done' WHERE transcription_id = $2",
       [transcriptionText, transcriptionId]
     );
   } catch (error) {
@@ -106,6 +106,7 @@ async function processTranscription(filePath, transcriptionId) {
     }
   }
 }
+
 
 // Endpoint para checar o status da transcrição
 app.get('/api/transcriptions/:transcriptionId', (req, res) => {
