@@ -527,3 +527,228 @@ h1 {
   margin-top: 20px;
 }
 
+/* Estilo geral para centralizar os elementos */
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centraliza os itens horizontalmente */
+  justify-content: center; /* Centraliza os itens verticalmente */
+  height: 100vh; /* Ocupa a altura total da tela */
+  background-color: #222; /* Cor de fundo escura */
+}
+
+/* Estilo do formulário */
+.form {
+  width: 100%;
+  max-width: 400px; /* Limita a largura máxima */
+  padding: 20px;
+  background-color: #333; /* Cor de fundo escura */
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo do rótulo (label) */
+.input-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #FFFFFF; /* Cor branca para o texto do label */
+}
+
+/* Container para o input e o botão de visibilidade */
+.input-container {
+  position: relative;
+  margin-bottom: 15px; /* Espaço entre os campos de entrada */
+}
+
+/* Estilo do campo de entrada (input) */
+.custom-input {
+  width: 100%; /* Ajusta a largura para ocupar todo o espaço disponível */
+  height: 50px;
+  padding: 10px 40px 10px 10px; /* Ajusta o padding para deixar espaço para o botão */
+  background-color: #333; /* Cor de fundo escura */
+  border: 1px solid #555; /* Borda cinza escura */
+  border-radius: 4px;
+  font-size: 16px;
+  line-height: 20px;
+  color: #FFFFFF; /* Cor branca para o texto */
+  box-sizing: border-box; /* Inclui padding e borda na largura total */
+}
+
+/* Estilo para o input com erro */
+.custom-input.input-error {
+  border-color: red;
+}
+
+/* Estilo do botão de visibilidade */
+.visibility-toggle-button {
+  position: absolute;
+  top: 50%;
+  right: -100px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #FFFFFF; /* Cor branca para o botão */
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Estilo da mensagem de erro */
+.error-message {
+  color: red;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
+/* Estilo dos botões */
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espaço entre os botões */
+}
+
+/* Estilo dos botões individuais */
+.auth-button {
+  width: 100%; /* Ajusta a largura para ocupar todo o espaço disponível */
+  padding: 10px;
+  background-color: #4CAF50; /* Cor de fundo dos botões */
+  border: none;
+  border-radius: 4px;
+  color: #FFFFFF; /* Cor do texto dos botões */
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Estilo dos botões de alternância (login/cadastro) */
+.toggle-button {
+  background-color: #555; /* Cor de fundo para o botão de alternância */
+}
+/* Estilos gerais */
+.container-main {
+  padding: 20px;
+  color: #fff; /* Cor do texto para visibilidade no fundo escuro */
+  max-width: 1200px; /* Largura máxima para a página principal */
+  margin: 0 auto; /* Centraliza o container */
+}
+
+h1, h2 {
+  margin-top: 0;
+  color: #e0e0e0; /* Cor dos títulos para destacar sobre o fundo escuro */
+}
+
+/* Botões */
+.config-button, .logout-button {
+  background-color: #007bff; /* Cor de fundo do botão */
+  color: #fff; /* Cor do texto do botão */
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.config-button:hover, .logout-button:hover {
+  background-color: #0056b3; /* Cor de fundo ao passar o mouse sobre o botão */
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #222; /* Cor de fundo da sidebar */
+  color: #fff; /* Cor do texto na sidebar */
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.close-sidebar {
+  background-color: #e74c3c; /* Cor de fundo do botão de fechar */
+  color: #fff; /* Cor do texto do botão de fechar */
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+/* Estilos da tabela */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #333; /* Cor de fundo da tabela */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #444; /* Borda inferior das células */
+}
+
+th {
+  background-color: #555; /* Cor de fundo dos cabeçalhos */
+}
+
+td {
+  background-color: #333; /* Cor de fundo das células */
+}
+
+tr:nth-child(even) td {
+  background-color: #444; /* Cor de fundo alternada para linhas pares */
+}
+
+tr:hover {
+  background-color: #555; /* Cor de fundo ao passar o mouse */
+}
+
+button {
+  background-color: #007bff; /* Cor de fundo do botão */
+  color: #fff; /* Cor do texto do botão */
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3; /* Cor de fundo ao passar o mouse sobre o botão */
+}
+
+/* Container de upload */
+.upload-container {
+  border: 2px dashed #aaa; /* Estilo da borda do container de upload */
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #222; /* Cor de fundo do container */
+  margin-top: 20px;
+}
+
+.upload-container input {
+  display: block;
+  margin: 10px auto;
+}
+
+.progress {
+  margin-top: 10px;
+}
+
+/* Mensagens de erro */
+.error-message {
+  color: #e74c3c; /* Cor do texto de erro */
+  margin-top: 10px;
+}
+
+/* Informações de cota */
+.quota-info {
+  margin-top: 20px;
+}

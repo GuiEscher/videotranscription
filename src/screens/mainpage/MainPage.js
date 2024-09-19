@@ -9,12 +9,12 @@ const MainPage = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [file, setFile] = useState(null);
-  const [transcription, setTranscription] = useState("");
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
   const [history, setHistory] = useState([]);
   const [videosLeft, setVideosLeft] = useState(0);
+  const [transcriptions, setTranscriptions] = useState([]); // Para armazenar as transcrições e seus status
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,8 +36,10 @@ const MainPage = () => {
       const response = await axios.get(
         `http://localhost:5000/api/transcriptions/${uid}`
       );
+      console.log("Histórico carregado:", response.data);
       setHistory(response.data);
     } catch (error) {
+      console.error("Erro ao carregar o histórico de transcrições:", error);
       setError("Erro ao carregar o histórico de transcrições.");
     }
   };
@@ -47,6 +49,7 @@ const MainPage = () => {
       const response = await axios.get(
         `http://localhost:5000/api/transcriptions/daily/${uid}/${decrement}`
       );
+      console.log("Cota diária carregada:", response.data);
       if (response.data && response.data.videosLeft !== undefined) {
         setVideosLeft(response.data.videosLeft);
       } else {
@@ -88,16 +91,22 @@ const MainPage = () => {
                 (progressEvent.loaded * 100) / totalLength
               );
               setProgress(progressPercentage);
+              console.log("Upload Progress:", progressPercentage);
             },
           }
         );
 
-        setTranscription(
-          response.data.transcription || "Transcrição não disponível"
-        );
+        console.log("Resposta do upload:", response.data);
+        const transcriptionId = response.data.transcriptionId;
+        setTranscriptions((prev) => [
+          ...prev,
+          { id: transcriptionId, status: "pending", transcription: "" }
+        ]);
+        await checkTranscriptionStatus(transcriptionId);
         await fetchQuota(auth.currentUser.uid, true); // Atualiza a cota após a transcrição
         await fetchHistory(auth.currentUser.uid); // Atualiza o histórico após a transcrição
       } catch (error) {
+        console.error("Erro ao processar o upload do arquivo:", error);
         setError(
           error.response?.data ||
             "Ocorreu um erro ao processar o arquivo. Tente novamente."
@@ -107,6 +116,38 @@ const MainPage = () => {
       }
     } else if (videosLeft <= 0) {
       setError("Você atingiu o limite diário de transcrições.");
+    }
+  };
+
+  const checkTranscriptionStatus = async (transcriptionId) => {
+    try {
+      console.log("Iniciando verificação do status da transcrição:", transcriptionId);
+      let response;
+      do {
+        await new Promise((resolve) => setTimeout(resolve, 3000)); // Aguarda 3 segundos
+        response = await axios.get(
+          `http://localhost:5001/api/transcriptions/${transcriptionId}`
+        );
+        console.log("Status da transcrição:", response.data);
+        setTranscriptions((prev) =>
+          prev.map((transcription) =>
+            transcription.id === transcriptionId
+              ? { ...transcription, ...response.data }
+              : transcription
+          )
+        );
+      } while (response.data.status !== "done" && response.data.status !== "failed");
+
+      setTranscriptions((prev) =>
+        prev.map((transcription) =>
+          transcription.id === transcriptionId
+            ? { ...transcription, ...response.data }
+            : transcription
+        )
+      );
+    } catch (error) {
+      console.error("Erro ao verificar o status da transcrição:", error);
+      setError("Erro ao verificar o status da transcrição.");
     }
   };
 
@@ -156,16 +197,22 @@ const MainPage = () => {
                 (progressEvent.loaded * 100) / totalLength
               );
               setProgress(progressPercentage);
+              console.log("Upload Progress (Drag & Drop):", progressPercentage);
             },
           }
         );
 
-        setTranscription(
-          response.data.transcription || "Transcrição não disponível"
-        );
+        console.log("Resposta do upload (Drag & Drop):", response.data);
+        const transcriptionId = response.data.transcriptionId;
+        setTranscriptions((prev) => [
+          ...prev,
+          { id: transcriptionId, status: "pending", transcription: "" }
+        ]);
+        await checkTranscriptionStatus(transcriptionId);
         await fetchQuota(auth.currentUser.uid, true); // Atualiza a cota após a transcrição
         await fetchHistory(auth.currentUser.uid); // Atualiza o histórico após a transcrição
       } catch (error) {
+        console.error("Erro ao processar o upload do arquivo (Drag & Drop):", error);
         setError(
           error.response?.data ||
             "Ocorreu um erro ao processar o arquivo. Tente novamente."
@@ -230,34 +277,46 @@ const MainPage = () => {
           type="file"
           accept="video/*"
           onChange={handleFileUpload}
-          className="file-input"
+          disabled={uploading}
         />
-        {uploading && <p>Upload em progresso: {progress}%</p>}
+        <p>Arraste e solte o vídeo aqui ou selecione um arquivo para enviar.</p>
+        {uploading && <progress value={progress} max={100} />}
         {error && <p className="error-message">{error}</p>}
-        {transcription && (
-          <div className="transcription-results">
-            <h2>Transcrição:</h2>
-            <p>{transcription}</p>
-            <button onClick={() => downloadTranscription(transcription)}>
-              Baixar Transcrição
-            </button>
-          </div>
-        )}
       </div>
 
-      <div className="history-container">
-        <h2>Histórico de Transcrições</h2>
-        <ul>
-          {history.map((item, index) => (
-            <li key={index}>
-              {item.date}: {item.transcription}
-            </li>
+      <h2>Histórico de Transcrições</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome do Arquivo</th>
+            <th>Status</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {transcriptions.map((transcription) => (
+            <tr key={transcription.id}>
+              <td>{transcription.id}</td>
+              <td>{transcription.fileName || "Desconhecido"}</td>
+              <td>{transcription.status}</td>
+              <td>
+                {transcription.status === "done" && (
+                  <button
+                    onClick={() => downloadTranscription(transcription.transcription)}
+                  >
+                    Baixar Transcrição
+                  </button>
+                )}
+              </td>
+            </tr>
           ))}
-        </ul>
-      </div>
+        </tbody>
+      </table>
 
-      <div className="quota-container">
-        <p>Vídeos restantes para transcrição: {videosLeft}</p>
+      <div className="quota-info">
+        <h2>Cota Diária Restante</h2>
+        <p>{videosLeft} vídeos restantes</p>
       </div>
     </div>
   );

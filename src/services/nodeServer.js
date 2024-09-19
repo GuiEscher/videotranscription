@@ -76,8 +76,6 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-
-
 // Rota para login com Google
 app.post("/api/google-signin", async (req, res) => {
   const { uid, nome, email, foto } = req.body;
@@ -96,27 +94,31 @@ app.post("/api/google-signin", async (req, res) => {
       [uid, t_count]
     );
 
-    res.status(201).send("Usuário Google registrado com sucesso");
+    res.status(200).json({ message: "Usuário autenticado com sucesso" });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Erro ao registrar usuário do Google");
+    res.status(500).send("Erro ao autenticar usuário");
   }
 });
 
-
-// Rota para buscar o histórico de transcrições de um usuário
-app.get("/api/transcriptions/history/:uid", async (req, res) => {
-  const { uid } = req.params;
+// Endpoint para verificar o status da transcrição
+app.get("/api/transcriptions/:transcriptionId", async (req, res) => {
+  const { transcriptionId } = req.params;
 
   try {
     const result = await pool.query(
-      "SELECT * FROM transcriptions WHERE uid = $1 ORDER BY created_at DESC",
-      [uid]
+      "SELECT * FROM transcriptions WHERE transcription_id = $1",
+      [transcriptionId]
     );
-    res.status(200).json({ transcriptions: result.rows });
-  } catch (error) {
-    console.error("Erro ao buscar o histórico:", error.message);
-    res.status(500).send("Erro ao buscar o histórico de transcrições.");
+
+    if (result.rows.length > 0) {
+      res.json(result.rows[0]);
+    } else {
+      res.status(404).json({ error: "Transcrição não encontrada." });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao buscar transcrição");
   }
 });
 
@@ -124,7 +126,6 @@ app.get("/api/transcriptions/history/:uid", async (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });
-
 // Rota para visualizar e atualizar a cota diária
 app.get("/api/transcriptions/daily/:uid/:decrement?", async (req, res) => {
   const { uid, decrement } = req.params;
@@ -155,3 +156,5 @@ app.get("/api/transcriptions/daily/:uid/:decrement?", async (req, res) => {
     res.status(500).json({ error: "Erro ao visualizar a cota diária" });
   }
 });
+// Verifica e reinicia a cota diária a cada 24 horas
+setInterval(resetDailyQuota, 24 * 60 * 60 * 1000);

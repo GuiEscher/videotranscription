@@ -10,17 +10,16 @@ CREATE TABLE usuarios (
     videos_uploaded INT DEFAULT 0    -- Contador de vídeos enviados pelo usuário
 );
 
--- Tabela para rastrear cada transcrição
+-- Cria a tabela 'transcriptions' com a nova estrutura
 CREATE TABLE transcriptions (
     id SERIAL PRIMARY KEY,          -- Chave primária autoincrementada para identificação única de cada transcrição
     uid VARCHAR(255),               -- UID do usuário que fez a transcrição
-    transcription INTEGER,             -- Texto da transcrição
+    transcription INTEGER,          -- Texto da transcrição (mantido como INTEGER conforme solicitado)
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data e hora da criação da transcrição
+    status VARCHAR(50) DEFAULT 'pending', -- Status da transcrição (novo campo)
+    transcription_id VARCHAR(255) UNIQUE, -- ID único da transcrição (novo campo)
     FOREIGN KEY (uid) REFERENCES usuarios(uid) ON DELETE CASCADE
 );
-
-ALTER TABLE transcriptions
-ADD CONSTRAINT check_transcription_non_negative CHECK (transcription >= 0);
 
 -- Adiciona restrição de unicidade ao campo 'uid' na tabela 'usuarios'
 ALTER TABLE usuarios ADD CONSTRAINT unique_uid UNIQUE (uid);

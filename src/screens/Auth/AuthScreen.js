@@ -4,7 +4,7 @@ import axios from 'axios';
 import { auth } from '../../config/firebaseConfig';
 import '../../App.css';
 import { useNavigate } from 'react-router-dom'; // Corrigir importação do useNavigate
-
+import EntradaTexto from '../../components/EntradaTexto';
 const AuthScreen = () => {
   const [isRegistering, setIsRegistering] = useState(true);
   const [email, setEmail] = useState('');
@@ -91,20 +91,33 @@ const AuthScreen = () => {
 
   return (
     <div className="auth-container">
-      <h2>{isRegistering ? 'Registrar' : 'Login'}</h2>
-      {authError && <p className="error-message">{authError}</p>}
-      {isRegistering && (
-        <input type="text" placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-      )}
-      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      <input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} />
-      <button onClick={handleAuthAction}>{isRegistering ? 'Registrar' : 'Login'}</button>
-      <button onClick={handleGoogleSignIn}>Login com Google</button>
-      <button onClick={() => setIsRegistering(!isRegistering)}>
-        {isRegistering ? 'Já tem uma conta? Faça login' : 'Criar nova conta'}
-      </button>
-    </div>
-  );
+    <h2>{isRegistering ? 'Registrar' : 'Login'}</h2>
+    {authError && <p className="error-message">{authError}</p>}
+    {isRegistering && (
+      <EntradaTexto
+        label="Nome"
+        value={nome}
+        onChange={(value) => setNome(value)}
+      />
+    )}
+    <EntradaTexto
+      label="Email"
+      type="email"
+      value={email}
+      onChange={(value) => setEmail(value)}
+    />
+    <EntradaTexto
+      label="Senha"
+      secureTextEntry={true}
+      value={password}
+      onChange={(value) => setPassword(value)}
+    />
+    <button onClick={handleAuthAction}>{isRegistering ? 'Registrar' : 'Login'}</button>
+    <button onClick={() => setIsRegistering(!isRegistering)}>
+      {isRegistering ? 'Já tem uma conta? Faça login' : 'Criar nova conta'}
+    </button>
+  </div>
+);
 };
 
 export default AuthScreen;
