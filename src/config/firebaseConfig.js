@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, setPersistence, browserSessionPersistence } from "firebase/auth";
+import { getAuth, setPersistence, browserLocalPersistence } from "firebase/auth";
+
 
 // Configuração do Firebase a partir das variáveis de ambiente
 const firebaseConfig = {
@@ -16,8 +17,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Configurar persistência para a sessão atual
-setPersistence(auth, browserSessionPersistence)
+// Configurar persistência para armazenamento local
+setPersistence(auth, browserLocalPersistence)
   .then(() => {
     console.log("Persistência de sessão configurada com sucesso");
   })
