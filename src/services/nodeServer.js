@@ -9,6 +9,7 @@ const cors = require("cors");
 app.use(cors()); // Permite solicitações de diferentes origens (CORS)
 app.use(bodyParser.json()); // Faz o parse do corpo das requisições em JSON
 
+
 // Configurar PostgreSQL
 const pool = new Pool({
   user: "postgres",
@@ -17,30 +18,6 @@ const pool = new Pool({
   password: "admin",
   port: 5432,
 });
-
-// Função para verificar e atualizar a cota de vídeos do usuário
-const checkAndUpdateQuota = async (uid) => {
-  // Verifica o número de vídeos enviados pelo usuário
-  const result = await pool.query(
-    "SELECT videos_uploaded FROM usuarios WHERE uid = $1",
-    [uid]
-  );
-  const user = result.rows[0];
-  if (user) {
-    // Verifica se o número de vídeos enviados hoje ultrapassa o limite
-    if (user.videos_uploaded >= 3) {
-      throw new Error("Limite diário de vídeos excedido");
-    }
-
-    // Atualiza o contador de vídeos
-    await pool.query(
-      "UPDATE usuarios SET videos_uploaded = videos_uploaded + 1 WHERE uid = $1",
-      [uid]
-    );
-  } else {
-    throw new Error("Usuário não encontrado");
-  }
-};
 
 // Função para reiniciar o contador de vídeos a cada novo dia
 const resetDailyQuota = async () => {
@@ -208,5 +185,3 @@ app.get("/api/transcriptions/user/:uid", async (req, res) => {
     res.status(500).json({ error: "Erro ao visualizar a cota diária" });
   }
 });
-// Verifica e reinicia a cota diária a cada 24 horas
-setInterval(resetDailyQuota, 24 * 60 * 60 * 1000);

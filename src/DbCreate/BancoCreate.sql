@@ -7,7 +7,6 @@ CREATE TABLE usuarios (
     senha VARCHAR(255),              -- Senha para usuários que não utilizam Google (pode ser NULL para Google)
     foto VARCHAR(500),               -- URL da foto de perfil do usuário (pode ser NULL)
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data e hora de criação do registro
-    videos_uploaded INT DEFAULT 0    -- Contador de vídeos enviados pelo usuário
 );
 
 -- Tabela para rastrear cada transcrição

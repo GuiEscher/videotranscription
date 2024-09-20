@@ -29,9 +29,13 @@ const MainPage = () => {
 
   const isExpanded = (transcriptionId) =>
     expandedTranscriptions[transcriptionId];
-
-  const truncateText = (text, limit) =>
-    text.length > limit ? text.slice(0, limit) + "..." : text;
+  const truncateText = (text, limit) => {
+    if (typeof text !== 'string') {
+      return ''; // Retorna uma string vazia se text não for uma string
+    }
+    return text.length > limit ? text.slice(0, limit) + '...' : text;
+  };
+  
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -165,7 +169,6 @@ const MainPage = () => {
       );
     } catch (error) {
       console.error("Erro ao verificar o status da transcrição:", error);
-      setError("Erro ao verificar o status da transcrição.");
     }
   };
 
@@ -187,63 +190,79 @@ const MainPage = () => {
   const handleDrop = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-
+  
     setError("");
+  
     const selectedFile = e.dataTransfer.files[0];
-
-    if (selectedFile && videosLeft > 0) {
-      setFile(selectedFile);
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      formData.append('uid', auth.currentUser.uid);
-
-      try {
-        setUploading(true);
-        setProgress(0);
-
-        const response = await axios.post(
-          "http://localhost:5001/api/transcribe",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            onUploadProgress: (progressEvent) => {
-              const totalLength = progressEvent.lengthComputable
-                ? progressEvent.total
-                : selectedFile.size;
-              const progressPercentage = Math.round(
-                (progressEvent.loaded * 100) / totalLength
-              );
-              setProgress(progressPercentage);
-              console.log("Upload Progress (Drag & Drop):", progressPercentage);
-            },
-          }
-        );
-
-        console.log("Resposta do upload (Drag & Drop):", response.data);
-        const transcriptionId = response.data.transcriptionId;
-        setTranscriptions((prev) => [
-          ...prev,
-          { id: transcriptionId, status: "pending", transcription: "" }
-        ]);
-        await checkTranscriptionStatus(transcriptionId);
-        await fetchQuota(auth.currentUser.uid, true); // Atualiza a cota após a transcrição
-        await fetchHistory(auth.currentUser.uid); // Atualiza o histórico após a transcrição
-      } catch (error) {
-        console.error("Erro ao processar o upload do arquivo (Drag & Drop):", error);
-        setError(
-          error.response?.data ||
-            "Ocorreu um erro ao processar o arquivo. Tente novamente."
-        );
-      } finally {
-        setUploading(false);
-      }
-    } else if (videosLeft <= 0) {
+    
+    if (!selectedFile) {
+      setError("Nenhum arquivo foi selecionado.");
+      return;
+    }
+  
+    if (typeof videosLeft === 'undefined' || videosLeft <= 0) {
       setError("Você atingiu o limite diário de transcrições.");
+      return;
+    }
+  
+    if (!auth.currentUser) {
+      setError("Usuário não autenticado.");
+      return;
+    }
+  
+    setFile(selectedFile);
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append('uid', auth.currentUser.uid);
+  
+    try {
+      setUploading(true);
+      setProgress(0);
+  
+      // Obtém o token de autenticação do Firebase
+      const accessToken = await auth.currentUser.getIdToken();
+  
+      const response = await axios.post(
+        "http://localhost:5001/api/transcribe",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`, // Adiciona o token no cabeçalho
+          },
+          onUploadProgress: (progressEvent) => {
+            const totalLength = progressEvent.lengthComputable
+              ? progressEvent.total
+              : selectedFile.size;
+            const progressPercentage = Math.round(
+              (progressEvent.loaded * 100) / totalLength
+            );
+            setProgress(progressPercentage);
+            console.log("Upload Progress (Drag & Drop):", progressPercentage);
+          },
+        }
+      );
+  
+      console.log("Resposta do upload (Drag & Drop):", response.data);
+      const transcriptionId = response.data.transcriptionId;
+      setTranscriptions((prev) => [
+        ...prev,
+        { id: transcriptionId, status: "pending", transcription: "" }
+      ]);
+      await checkTranscriptionStatus(transcriptionId);
+      await fetchQuota(auth.currentUser.uid, true); // Atualiza a cota após a transcrição
+      await fetchHistory(auth.currentUser.uid); // Atualiza o histórico após a transcrição
+    } catch (error) {
+      console.error("Erro ao processar o upload do arquivo (Drag & Drop):", error);
+      setError(
+        error.response?.data ||
+        "Ocorreu um erro ao processar o arquivo. Tente novamente."
+      );
+    } finally {
+      setUploading(false);
     }
   };
-
+  
   const downloadTranscription = (transcriptionText) => {
     const element = document.createElement("a");
     const file = new Blob([transcriptionText], { type: "text/plain" });
@@ -362,35 +381,4 @@ const MainPage = () => {
   );
 };
 
-
-
 export default MainPage;
-
-
-
-
-// const fetchTranscriptionStatus = async (transcriptionId) => {
-//   try {
-//     const response = await axios.get(`http://localhost:5001/api/transcriptions/${transcriptionId}`);
-//     const transcription = response.data;
-//     setTranscriptions((prevTranscriptions) =>
-//       prevTranscriptions.map((t) =>
-//         t.transcriptionId === transcriptionId ? transcription : t
-//       )
-//     );
-//   } catch (error) {
-//     console.error("Erro ao buscar o status da transcrição:", error);
-//   }
-// };
-
-// useEffect(() => {
-//   const interval = setInterval(() => {
-//     history.forEach((transcription) => {
-//       if (transcription.status === 'pending') {
-//         fetchTranscriptionStatus(transcription.transcription_id);
-//       }
-//     });
-//   }, 5000); // Verifica a cada 5 segundos
-
-//   return () => clearInterval(interval);
-// }, [history]);

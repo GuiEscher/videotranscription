@@ -38,7 +38,6 @@ const AuthScreen = () => {
         const user = userCredential.user;
         await sendEmailVerification(user);
 
-        // Adiciona informações do usuário no PostgreSQL através de uma API backend
         console.log('Enviando dados para o backend:', {
           uid: user.uid,
           nome: nome,
@@ -53,7 +52,6 @@ const AuthScreen = () => {
           senha: password
         });
 
-        // Atualiza o estado ou outros dados conforme necessário
         setAuthError(null); // Limpa erros
         navigate('/main');  // Navega para a página principal após o registro
       } else {

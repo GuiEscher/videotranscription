@@ -14,6 +14,15 @@ app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
 
+const admin = require('firebase-admin'); // Importa o SDK Firebase Admin
+const serviceAccount = require('../../config/videotranscription-e2f65-firebase-adminsdk-55kaj-ca08378f9d.json'); // Carrega o arquivo JSON com as credenciais do service account
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount), // Inicializa o Firebase Admin com a credencial do service account
+});
+
+
+// Configuração da conexão com o banco de dados PostgreSQL
 const pool = new Pool({
   user: "postgres",
   host: "localhost",
@@ -22,10 +31,11 @@ const pool = new Pool({
   port: 5432,
 });
 
-// Cria um diretório temporário se não existir
+// Cria um diretório temporário para armazenar arquivos de transcrição
 const tempDir = path.join(__dirname, 'temp');
 fsPromises.mkdir(tempDir, { recursive: true }).catch(err => console.error('Erro ao criar diretório:', err));
 
+// Instancia a OpenAI com a chave de API
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -33,45 +43,49 @@ const openai = new OpenAI({
 // Tabela temporária em memória para armazenar status das transcrições
 const transcriptionStatus = {};
 
+// Endpoint para transcrever arquivos de áudio
 app.post('/api/transcribe', async (req, res) => {
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send('Nenhum arquivo foi enviado.');
-  }
+  const token = req.headers.authorization?.split(' ')[1]; // O token será enviado no cabeçalho 'Authorization'
 
-  // Verifique se o `uid` foi enviado
-  if (!req.body.uid) {
-    return res.status(400).send('UID não fornecido.');
+  if (!token) {
+    return res.status(401).json({ error: 'Token de acesso não fornecido.' });
   }
-
-  const file = req.files.file;
-  const filePath = path.join(tempDir, file.name);
-  const transcriptionId = uuidv4(); // Gerar um ID único para a transcrição
 
   try {
-    await file.mv(filePath);
+    // Verifica o token de acesso usando o Firebase Admin SDK
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const uid = decodedToken.uid; // UID do usuário autenticado
 
-    // Registra o status inicial da transcrição na tabela do banco de dados
+    // Continuar com o processo de upload e transcrição
+    const file = req.files.file;
+    if (!file) {
+      return res.status(400).send('Nenhum arquivo foi enviado.');
+    }
+
+    const filePath = path.join(tempDir, file.name);
+    const transcriptionId = uuidv4();
+
+    await file.mv(filePath);
     await pool.query(
       "INSERT INTO transcriptions (transcription_id, uid, status) VALUES ($1, $2, $3)",
-      [transcriptionId, req.body.uid, 'pending']
+      [transcriptionId, uid, 'pending']
     );
 
-    // Processa a transcrição em segundo plano
     processTranscription(filePath, transcriptionId);
-
-    res.json({ transcriptionId }); // Retorna o ID da transcrição
-  } catch (err) {
-    console.error('Erro ao salvar o arquivo:', err);
-    res.status(500).send('Erro ao salvar o arquivo.');
+    res.json({ transcriptionId });
+  } catch (error) {
+    console.error('Erro de autenticação:', error);
+    return res.status(403).json({ error: 'Token inválido.' });
   }
 });
 
 
-
+// Função para processar a transcrição de forma assíncrona
 async function processTranscription(filePath, transcriptionId) {
   try {
-    const readStream = fs.createReadStream(filePath);
+    const readStream = fs.createReadStream(filePath); // Cria um stream de leitura do arquivo
 
+    // Faz a chamada à API da OpenAI para transcrição
     const response = await openai.audio.transcriptions.create({
       file: readStream,
       model: 'whisper-1',
@@ -115,15 +129,13 @@ async function processTranscription(filePath, transcriptionId) {
   }
 }
 
-
-
 // Endpoint para checar o status da transcrição
 app.get('/api/transcriptions/:transcriptionId', (req, res) => {
-  const { transcriptionId } = req.params;
-  const status = transcriptionStatus[transcriptionId];
+  const { transcriptionId } = req.params; // Obtém o ID da transcrição da URL
+  const status = transcriptionStatus[transcriptionId]; // Busca o status na tabela temporária
 
   if (status) {
-    res.json(status);
+    res.json(status); // Retorna o status da transcrição
   } else {
     res.status(404).json({ error: 'Transcrição não encontrada.' });
   }
@@ -134,3 +146,4 @@ const port = 5001;
 app.listen(port, () => {
   console.log(`Servidor de transcrição rodando na porta ${port}`);
 });
+
