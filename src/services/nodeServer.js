@@ -168,6 +168,29 @@ app.get("/api/transcriptions/daily/:uid/:decrement?", async (req, res) => {
       );
     }
 
+
+    // Rota para buscar todas as transcrições de um usuário específico
+app.get("/api/transcriptions/user/:uid", async (req, res) => {
+  const { uid } = req.params;
+
+  try {
+    const result = await pool.query(
+      "SELECT transcription_id, status, transcription_text FROM transcriptions WHERE uid = $1",
+      [uid]
+    );
+
+    if (result.rows.length > 0) {
+      res.json(result.rows); // Retorna todas as transcrições do usuário
+    } else {
+      res.status(404).json({ error: "Nenhuma transcrição encontrada para este usuário." });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro ao buscar transcrições" });
+  }
+});
+
+
     // Executa a consulta e pega o valor de 'transcription'
     const result = await pool.query(
       "SELECT transcription FROM transcriptions WHERE uid = $1",

@@ -35,16 +35,16 @@ const MainPage = () => {
   const fetchHistory = async (uid) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/transcriptions/${uid}`
+        `http://localhost:5000/api/transcriptions/user/${uid}` // Endpoint correto
       );
       console.log("Histórico carregado:", response.data);
-      setHistory(response.data);
+      setTranscriptions(response.data); // Armazena as transcrições
     } catch (error) {
       console.error("Erro ao carregar o histórico de transcrições:", error);
-      //setError("Erro ao carregar o histórico de transcrições.");
+      setError("Erro ao carregar o histórico de transcrições.");
     }
   };
-
+  
   const fetchQuota = async (uid, decrement = false) => {
     try {
       const response = await axios.get(
@@ -287,35 +287,41 @@ const MainPage = () => {
         {uploading && <progress value={progress} max={100} />}
         {error && <p className="error-message">{error}</p>}
       </div>
-
       <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nome do Arquivo</th>
-            <th>Status</th>
-            <th>Ação</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transcriptions.map((transcription) => (
-            <tr key={transcription.id}>
-              <td>{transcription.id}</td>
-              <td>{transcription.fileName || "Desconhecido"}</td>
-              <td>{transcription.status}</td>
-              <td>
-                {transcription.status === "done" && (
-                  <button
-                    onClick={() => downloadTranscription(transcription.transcription)}
-                  >
-                    Baixar Transcrição
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Status</th>
+      <th>Transcrição</th>
+      <th>Ação</th>
+    </tr>
+  </thead>
+  <tbody>
+    {transcriptions.map((transcription) => (
+      <tr key={transcription.transcription_id}>
+        <td>{transcription.transcription_id}</td>
+        <td>{transcription.status}</td>
+        <td>
+          {transcription.status === "done"
+            ? transcription.transcription_text
+            : "Ainda não disponível"}
+        </td>
+        <td>
+          {transcription.status === "done" && (
+            <button
+              onClick={() =>
+                downloadTranscription(transcription.transcription_text)
+              }
+            >
+              Baixar Transcrição
+            </button>
+          )}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
 
       <div className="quota-info">
         <h2>Cota Diária Restante</h2>
