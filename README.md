@@ -27,7 +27,7 @@ Este projeto contém uma aplicação frontend e um servidor backend. Siga os pas
    yarn install
    ```
 
-3. **Crie arquivos de variáveis de ambiente**
+3. **Crie arquivos de variáveis de ambiente e o banco de dados**
 
    Você precisa criar dois arquivos de variáveis de ambiente:
 
@@ -43,10 +43,10 @@ Este projeto contém uma aplicação frontend e um servidor backend. Siga os pas
    REACT_APP_FIREBASE_AUTH_DOMAIN=SeuAuthDomainAqui
    REACT_APP_FIREBASE_PROJECT_ID=SeuProjectIDAqui
    ```
-
+   Utilize o arquivo sql fornecido na pasta DbCreate para criar o banco de dados com o postgree. 
    ### Chave da API (na pasta `servidor`)
 
-   Na pasta `servidor`, crie um arquivo `.env` com a chave da API:
+   Na pasta `servidor`, crie um arquivo `.env` com a chave da API e adicione as variaveis de conexão com o banco de dados:
 
    ```
    API_KEY=SuaChaveDaApiAqui
