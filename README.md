@@ -1,70 +1,81 @@
-# Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Projeto - Instruções de Inicialização
 
-## Available Scripts
+Este projeto contém uma aplicação frontend e um servidor backend. Siga os passos abaixo para configurar e iniciar o projeto corretamente.
 
-In the project directory, you can run:
+## Requisitos
 
-### `yarn start`
+- Node.js (v16 ou superior)
+- Yarn (v1.22 ou superior)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Passo a Passo
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. **Clone o repositório**
 
-### `yarn test`
+   Clone o repositório do GitHub:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+   ```bash
+   git clone https://github.com/seu-usuario/seu-repositorio.git
+   cd seu-repositorio
+   ```
 
-### `yarn build`
+2. **Instale as dependências do frontend**
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+   Navegue até o diretório raiz do projeto e execute o comando para instalar as dependências do frontend:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+   ```bash
+   yarn install
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **Crie arquivos de variáveis de ambiente**
 
-### `yarn eject`
+   Você precisa criar dois arquivos de variáveis de ambiente:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+   - Um na raiz do projeto para as credenciais do Firebase.
+   - Outro na pasta `servidor` para armazenar a chave da API.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+   ### Firebase (na raiz do projeto)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+   Crie um arquivo `.env` na pasta raiz do projeto e adicione as credenciais do Firebase:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   ```
+   REACT_APP_FIREBASE_API_KEY=SuaChaveFirebaseAqui
+   REACT_APP_FIREBASE_AUTH_DOMAIN=SeuAuthDomainAqui
+   REACT_APP_FIREBASE_PROJECT_ID=SeuProjectIDAqui
+   ```
 
-## Learn More
+   ### Chave da API (na pasta `servidor`)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   Na pasta `servidor`, crie um arquivo `.env` com a chave da API:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+   ```
+   API_KEY=SuaChaveDaApiAqui
+   ```
 
-### Code Splitting
+4. **Inicie o frontend**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+   Para iniciar o frontend, execute o seguinte comando no diretório raiz do projeto:
 
-### Analyzing the Bundle Size
+   ```bash
+   yarn start
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+5. **Inicie o backend**
 
-### Making a Progressive Web App
+   Navegue até a pasta `servidor` e inicie o servidor Node.js:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+   ```bash
+   cd servidor
+   node nodeServer.js
+   node transcriptions.js
+   ```
 
-### Advanced Configuration
+6. **Acessando a aplicação**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+   Após iniciar tanto o frontend quanto o backend, a aplicação estará disponível no seu navegador no endereço:
 
-### Deployment
+   ```
+   http://localhost:3000
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Pronto! O projeto está configurado e em execução.
