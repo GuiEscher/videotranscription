@@ -16,7 +16,22 @@ const MainPage = () => {
   const [videosLeft, setVideosLeft] = useState(0);
   const [transcriptions, setTranscriptions] = useState([]); // Para armazenar as transcrições e seus status
   const [transcriptionsStatus, setTranscriptionsStatus] = useState("");
+  const [expandedTranscriptions, setExpandedTranscriptions] = useState({});
+  
   const navigate = useNavigate();
+
+  const toggleExpand = (transcriptionId) => {
+    setExpandedTranscriptions((prev) => ({
+      ...prev,
+      [transcriptionId]: !prev[transcriptionId],
+    }));
+  };
+
+  const isExpanded = (transcriptionId) =>
+    expandedTranscriptions[transcriptionId];
+
+  const truncateText = (text, limit) =>
+    text.length > limit ? text.slice(0, limit) + "..." : text;
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -288,39 +303,55 @@ const MainPage = () => {
         {error && <p className="error-message">{error}</p>}
       </div>
       <table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Status</th>
-      <th>Transcrição</th>
-      <th>Ação</th>
-    </tr>
-  </thead>
-  <tbody>
-    {transcriptions.map((transcription) => (
-      <tr key={transcription.transcription_id}>
-        <td>{transcription.transcription_id}</td>
-        <td>{transcription.status}</td>
-        <td>
-          {transcription.status === "done"
-            ? transcription.transcription_text
-            : "Ainda não disponível"}
-        </td>
-        <td>
-          {transcription.status === "done" && (
-            <button
-              onClick={() =>
-                downloadTranscription(transcription.transcription_text)
-              }
-            >
-              Baixar Transcrição
-            </button>
-          )}
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Transcrição</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {transcriptions.map((transcription) => (
+            <tr key={transcription.transcription_id}>
+              <td>{transcription.transcription_id}</td>
+              <td>{transcription.status}</td>
+              <td>
+                {transcription.status === "done" ? (
+                  <>
+                    {isExpanded(transcription.transcription_id)
+                      ? transcription.transcription_text
+                      : truncateText(transcription.transcription_text, 100)}
+                    <span
+                      onClick={() =>
+                        toggleExpand(transcription.transcription_id)
+                      }
+                      className="read-more"
+                    >
+                      {isExpanded(transcription.transcription_id)
+                        ? "Ler menos"
+                        : "Ler mais"}
+                    </span>
+                  </>
+                ) : (
+                  "Ainda não disponível"
+                )}
+              </td>
+              <td>
+                {transcription.status === "done" && (
+                  <button
+                    onClick={() =>
+                      downloadTranscription(transcription.transcription_text)
+                    }
+                  >
+                    Baixar Transcrição
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
 
       <div className="quota-info">

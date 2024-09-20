@@ -71,17 +71,7 @@ export const NavBar = () => {
             </Nav.Link>
           </Nav>
           <span className="navbar-text">
-            <div className="social-icon">
-              <a href="#">
-                <img src={navIcon1} alt="" />
-              </a>
-              <a href="#">
-                <img src={navIcon2} alt="" />
-              </a>
-              <a href="#">
-                <img src={navIcon3} alt="" />
-              </a>
-            </div>
+           
             {/* Atualize o botão para usar o componente Link do react-router-dom */}
             <Link to="/auth">
               <button className="vvd">

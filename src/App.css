@@ -638,7 +638,7 @@ h1, h2 {
 
 /* Botões */
 .config-button, .logout-button {
-  background-color: #007bff; /* Cor de fundo do botão */
+  background-color: #302d2d; /* Cor de fundo do botão */
   color: #fff; /* Cor do texto do botão */
   border: none;
   border-radius: 4px;
@@ -751,4 +751,14 @@ button:hover {
 /* Informações de cota */
 .quota-info {
   margin-top: 20px;
+}
+.read-more {
+  color: lightblue;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-left: 5px;
+}
+
+.read-more:hover {
+  color: darkblue; /* Adiciona um efeito de hover para melhorar a experiência */
 }
