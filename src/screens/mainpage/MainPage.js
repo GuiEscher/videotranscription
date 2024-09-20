@@ -15,6 +15,7 @@ const MainPage = () => {
   const [history, setHistory] = useState([]);
   const [videosLeft, setVideosLeft] = useState(0);
   const [transcriptions, setTranscriptions] = useState([]); // Para armazenar as transcrições e seus status
+  const [transcriptionsStatus, setTranscriptionsStatus] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const MainPage = () => {
       setHistory(response.data);
     } catch (error) {
       console.error("Erro ao carregar o histórico de transcrições:", error);
-      setError("Erro ao carregar o histórico de transcrições.");
+      //setError("Erro ao carregar o histórico de transcrições.");
     }
   };
 
@@ -67,15 +68,16 @@ const MainPage = () => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
     setError("");
-
+  
     if (selectedFile && videosLeft > 0) {
       const formData = new FormData();
       formData.append("file", selectedFile);
-
+      formData.append("uid", currentUser.uid); // Adiciona o UID do usuário no FormData
+      formData.append("transcriptions", 3);
       try {
         setUploading(true);
         setProgress(0);
-
+  
         const response = await axios.post(
           "http://localhost:5001/api/transcribe",
           formData,
@@ -95,7 +97,7 @@ const MainPage = () => {
             },
           }
         );
-
+  
         console.log("Resposta do upload:", response.data);
         const transcriptionId = response.data.transcriptionId;
         setTranscriptions((prev) => [
@@ -118,6 +120,7 @@ const MainPage = () => {
       setError("Você atingiu o limite diário de transcrições.");
     }
   };
+  
 
   const checkTranscriptionStatus = async (transcriptionId) => {
     try {
@@ -177,6 +180,7 @@ const MainPage = () => {
       setFile(selectedFile);
       const formData = new FormData();
       formData.append("file", selectedFile);
+      formData.append('uid', auth.currentUser.uid);
 
       try {
         setUploading(true);
@@ -284,7 +288,6 @@ const MainPage = () => {
         {error && <p className="error-message">{error}</p>}
       </div>
 
-      <h2>Histórico de Transcrições</h2>
       <table>
         <thead>
           <tr>
@@ -322,4 +325,35 @@ const MainPage = () => {
   );
 };
 
+
+
 export default MainPage;
+
+
+
+
+// const fetchTranscriptionStatus = async (transcriptionId) => {
+//   try {
+//     const response = await axios.get(`http://localhost:5001/api/transcriptions/${transcriptionId}`);
+//     const transcription = response.data;
+//     setTranscriptions((prevTranscriptions) =>
+//       prevTranscriptions.map((t) =>
+//         t.transcriptionId === transcriptionId ? transcription : t
+//       )
+//     );
+//   } catch (error) {
+//     console.error("Erro ao buscar o status da transcrição:", error);
+//   }
+// };
+
+// useEffect(() => {
+//   const interval = setInterval(() => {
+//     history.forEach((transcription) => {
+//       if (transcription.status === 'pending') {
+//         fetchTranscriptionStatus(transcription.transcription_id);
+//       }
+//     });
+//   }, 5000); // Verifica a cada 5 segundos
+
+//   return () => clearInterval(interval);
+// }, [history]);

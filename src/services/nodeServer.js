@@ -55,19 +55,17 @@ const resetDailyQuota = async () => {
 // Rota para registrar o usuário
 app.post("/api/register", async (req, res) => {
   const { uid, nome, email, senha } = req.body;
-  const t_count = 3; // Usuário ainda tem 3 vídeos disponíveis
+  const t_count = 3; // Usuário tem 3 vídeos disponíveis inicialmente
+
   try {
     // Insere o novo usuário na tabela 'usuarios'
     await pool.query(
-      "INSERT INTO usuarios (uid, nome, email, senha) VALUES ($1, $2, $3, $4) ON CONFLICT (uid) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, senha = EXCLUDED.senha",
+      "INSERT INTO usuarios (uid, nome, email, senha) VALUES ($1, $2, $3, $4) ON CONFLICT (uid) DO NOTHING",
       [uid, nome, email, senha]
     );
-    
-    // Adiciona a cota inicial para o novo usuário
-    await pool.query(
-      "INSERT INTO transcriptions (uid, transcription) VALUES ($1, $2) ON CONFLICT (uid) DO UPDATE SET transcription = EXCLUDED.transcription",
-      [uid, t_count]
-    );
+
+    // Insere uma cota inicial para o novo usuário na tabela 'transcriptions'
+    await insertOrUpdateTranscriptionQuota(uid, t_count);
     
     res.status(201).send("Usuário registrado com sucesso");
   } catch (err) {
@@ -75,6 +73,37 @@ app.post("/api/register", async (req, res) => {
     res.status(500).send("Erro ao registrar usuário");
   }
 });
+
+const insertOrUpdateTranscriptionQuota = async (uid, t_count) => {
+  await pool.query(
+    "INSERT INTO transcriptions (uid, transcription) VALUES ($1, $2) ",
+    [uid, t_count]
+  );
+};
+
+
+// Rota para login com Google
+app.post("/api/google-signin", async (req, res) => {
+  const { uid, nome, email, foto } = req.body;
+  const t_count = 3; // Define a cota inicial de vídeos para novos usuários
+
+  try {
+    // Insere ou atualiza o usuário na tabela 'usuarios'
+    await pool.query(
+      "INSERT INTO usuarios (uid, nome, email, foto) VALUES ($1, $2, $3, $4) ON CONFLICT (uid) DO UPDATE SET nome = EXCLUDED.nome, email = EXCLUDED.email, foto = EXCLUDED.foto",
+      [uid, nome, email, foto || null]
+    );
+
+    // Insere ou atualiza a cota inicial na tabela 'transcriptions'
+    await insertOrUpdateTranscriptionQuota(uid, t_count);
+
+    res.status(200).json({ message: "Usuário autenticado com sucesso" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro ao autenticar usuário");
+  }
+});
+
 
 // Rota para login com Google
 app.post("/api/google-signin", async (req, res) => {
@@ -90,7 +119,7 @@ app.post("/api/google-signin", async (req, res) => {
 
     // Insere a cota inicial na tabela 'transcriptions'
     await pool.query(
-      "INSERT INTO transcriptions (uid, transcription) VALUES ($1, $2) ON CONFLICT (uid) DO UPDATE SET transcription = EXCLUDED.transcription",
+      "INSERT INTO transcriptions (uid, transcription) VALUES ($1, $2)",
       [uid, t_count]
     );
 

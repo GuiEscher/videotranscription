@@ -16,7 +16,9 @@ CREATE TABLE transcriptions (
     uid VARCHAR(255),               -- UID do usuário que fez a transcrição
     transcription INTEGER,             -- Texto da transcrição
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Data e hora da criação da transcrição
-    FOREIGN KEY (uid) REFERENCES usuarios(uid) ON DELETE CASCADE
+    FOREIGN KEY (uid) REFERENCES usuarios(uid) ON DELETE CASCADE,
+    transcription_text TEXT,
+    transcription_id VARCHAR(255)
 );
 
 ALTER TABLE transcriptions
@@ -28,3 +30,7 @@ ADD COLUMN transcription_text TEXT;
 -- Verifica e corrige a estrutura da tabela se necessário
 ALTER TABLE transcriptions
 ALTER COLUMN transcription_id SET DATA TYPE VARCHAR(255);
+
+ALTER TABLE transcriptions DROP CONSTRAINT unique_uid_transcriptions;
+ALTER TABLE transcriptions
+ADD CONSTRAINT unique_transcription_id UNIQUE (transcription_id);
